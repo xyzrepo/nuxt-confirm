@@ -111,9 +111,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useColorMode, useConfirm } from '#imports'
-
 const colorMode = useColorMode()
 const { confirm } = useConfirm()
 const result = ref<boolean | null>(null)
@@ -124,7 +121,7 @@ const openDangerDialog = async () => {
     confirm: 'Yes, I am sure',
     cancel: 'No, cancel',
     type: 'danger',
-    size: 'xs',
+    size: 'xl',
   })
   result.value = confirmed
 }
@@ -136,6 +133,7 @@ const openWarningDialog = async () => {
     confirm: 'Yes, I am sure',
     cancel: 'No, cancel',
     type: 'warning',
+    size: 'lg',
   })
   result.value = confirmed
 }
@@ -147,6 +145,7 @@ const openSuccessDialog = async () => {
     confirm: 'Yes, I am sure',
     cancel: 'No, cancel',
     type: 'success',
+    size: 'md',
   })
   result.value = confirmed
 }
@@ -158,6 +157,7 @@ const openInfoDialog = async () => {
     confirm: 'Yes, I am sure',
     cancel: 'No, cancel',
     type: 'info',
+    size: 'sm',
   })
   result.value = confirmed
 }
@@ -167,6 +167,7 @@ const openDefaultDialog = async () => {
   const confirmed = await confirm({
     title: 'Default!! Are you sure?',
     message: 'Are you sure you want to do this?',
+    size: 'xs',
   })
   result.value = confirmed
 }

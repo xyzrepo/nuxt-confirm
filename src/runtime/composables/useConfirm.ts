@@ -97,7 +97,6 @@ export interface ConfirmOptions {
   size?: ConfirmSize
   icon?: Partial<ConfirmIcon> | string
   bgClass?: string
-  version?: 2 | 3 // Add version option
 }
 
 /**
@@ -109,7 +108,6 @@ export interface ConfirmState extends Required<Omit<ConfirmOptions, 'confirm' | 
   cancel: ConfirmButton
   icon: ConfirmIcon
   resolve: ((value: boolean) => void) | null
-  version: 2 | 3
 }
 
 /**
@@ -118,14 +116,13 @@ export interface ConfirmState extends Required<Omit<ConfirmOptions, 'confirm' | 
  */
 const INFO: {
   type: ConfirmType
-  size: ConfirmSize
-  bgClass: string
-  icon: ConfirmIcon
-  confirm: ConfirmButton
-  cancel: ConfirmButton
+  size?: ConfirmSize
+  icon?: ConfirmIcon
+  confirm?: ConfirmButton
+  cancel?: ConfirmButton
+  bgClass?: string
 } = {
   type: 'info',
-  size: 'lg',
   bgClass: 'bg-white dark:bg-black',
   icon: {
     name: 'i-heroicons-information-circle',
@@ -145,14 +142,13 @@ const INFO: {
 
 const WARNING: {
   type: ConfirmType
-  size: ConfirmSize
-  bgClass: string
-  icon: ConfirmIcon
-  confirm: ConfirmButton
-  cancel: ConfirmButton
+  size?: ConfirmSize
+  icon?: ConfirmIcon
+  confirm?: ConfirmButton
+  cancel?: ConfirmButton
+  bgClass?: string
 } = {
   type: 'warning',
-  size: 'lg',
   bgClass: 'bg-white dark:bg-black',
   icon: {
     name: 'i-heroicons-exclamation-circle',
@@ -172,17 +168,16 @@ const WARNING: {
 
 const DANGER: {
   type: ConfirmType
-  size: ConfirmSize
-  bgClass: string
-  icon: ConfirmIcon
-  confirm: ConfirmButton
-  cancel: ConfirmButton
+  size?: ConfirmSize
+  icon?: ConfirmIcon
+  confirm?: ConfirmButton
+  cancel?: ConfirmButton
+  bgClass?: string
 } = {
   type: 'danger',
-  size: 'lg',
   bgClass: 'bg-white dark:bg-black',
   icon: {
-    name: 'i-heroicons-exclamation-circle',
+    name: 'i-heroicons-exclamation-triangle',
     color: 'error',
   },
   confirm: {
@@ -199,14 +194,13 @@ const DANGER: {
 
 const SUCCESS: {
   type: ConfirmType
-  size: ConfirmSize
-  bgClass: string
-  icon: ConfirmIcon
-  confirm: ConfirmButton
-  cancel: ConfirmButton
+  size?: ConfirmSize
+  icon?: ConfirmIcon
+  confirm?: ConfirmButton
+  cancel?: ConfirmButton
+  bgClass?: string
 } = {
   type: 'success',
-  size: 'lg',
   bgClass: 'bg-white dark:bg-black',
   icon: {
     name: 'i-heroicons-check-circle',
@@ -233,100 +227,48 @@ const PRESETS: Record<ConfirmType, ConfirmOptions> = {
 }
 
 /**
- * Simple color mapping function
+ * Add size to the object if it does not have size
+ * @param obj - The object to add size to
+ * @param size - The size to add
+ * @returns The mapped object
  */
-function mapColorToVersion(color: string, version?: 2 | 3): string {
-  if (version === 2) {
-    // Map v3 colors to v2
-    const v2ColorMap: Record<string, string> = {
-      info: 'blue',
-      warning: 'yellow',
-      error: 'red',
-      success: 'green',
-      neutral: 'gray',
-    }
-    return v2ColorMap[color] || color
-  }
-  return color
+function addSize<T extends ConfirmButton | ConfirmIcon>(obj: T, size: ConfirmSize): T {
+  return defu(obj, { size }) as T
 }
-
-// Define the type for typeDefaults
-interface _DefaultsType {
-  confirm: Partial<ConfirmButton>
-  cancel: Partial<ConfirmButton>
-  icon: Partial<ConfirmIcon>
-  [key: string]: unknown
-}
-
 /**
  * Helper function to create a button configuration by merging options with defaults
  */
-function getButton(
-  option?: Partial<ConfirmButton> | string | false,
-  defaultButton?: Partial<ConfirmButton> | null,
-  version: 2 | 3 = 3,
-  size?: ConfirmSize,
-): ConfirmButton {
-  if (option === false) return {} as ConfirmButton
+function getButton(option?: Partial<ConfirmButton> | string | false, defaultButton?: Partial<ConfirmButton> | null): ConfirmButton {
+  // Handle edge cases
+  if (option === false || (!option && !defaultButton)) return {} as ConfirmButton
   if (!option && defaultButton) return { ...defaultButton } as ConfirmButton
-  if (!option && !defaultButton) return {} as ConfirmButton
 
+  // Handle string option (button label)
   if (typeof option === 'string') {
-    if (!defaultButton) return { label: option, size } as ConfirmButton
-
-    return {
-      ...defaultButton,
-      label: option,
-      color: mapColorToVersion(defaultButton.color as string || '', version),
-      size: size || defaultButton.size,
-    } as ConfirmButton
+    const base = defaultButton ? defaultButton : {}
+    return defu({ label: option }, base) as ConfirmButton
   }
 
-  if (!defaultButton) return option as ConfirmButton
-
-  const result = defu(option, defaultButton) as ConfirmButton
-  if (result.color) {
-    result.color = mapColorToVersion(result.color as string, version)
-  }
-  if (result.size) {
-    result.size = size || result.size
-  }
-  return result
+  // Handle object option
+  return defu(option, defaultButton || {}) as ConfirmButton
 }
 
 /**
  * Helper function to create an icon configuration by merging options with defaults
  */
-function getIcon(
-  option?: Partial<ConfirmIcon> | string,
-  defaultIcon?: Partial<ConfirmIcon> | null,
-  version: 2 | 3 = 3,
-  size?: ConfirmSize,
-): ConfirmIcon {
+function getIcon(option?: Partial<ConfirmIcon> | string | false, defaultIcon?: Partial<ConfirmIcon> | null): ConfirmIcon {
+  // Handle edge cases
+  if (option === false || (!option && !defaultIcon)) return {} as ConfirmIcon
   if (!option && defaultIcon) return { ...defaultIcon } as ConfirmIcon
-  if (!option && !defaultIcon) return {} as ConfirmIcon
 
+  // Handle string option (icon name)
   if (typeof option === 'string') {
-    if (!defaultIcon) return { name: option, size } as ConfirmIcon
-
-    return {
-      ...defaultIcon,
-      name: option,
-      color: mapColorToVersion(defaultIcon.color as string || '', version),
-      size: size || defaultIcon.size,
-    } as ConfirmIcon
+    const base = defaultIcon ? defaultIcon : {}
+    return defu({ name: option }, base) as ConfirmIcon
   }
 
-  if (!defaultIcon) return option as ConfirmIcon
-
-  const result = defu(option, defaultIcon) as ConfirmIcon
-  if (result.color) {
-    result.color = mapColorToVersion(result.color as string, version)
-  }
-  if (result.size) {
-    result.size = size || result.size
-  }
-  return result
+  // Handle object option
+  return defu(option, defaultIcon || {}) as ConfirmIcon
 }
 
 /**
@@ -335,9 +277,6 @@ function getIcon(
  * @returns Object containing methods to show/hide dialogs and access dialog state
  */
 export function useConfirm(globalOptions: ConfirmOptions = {}) {
-  // Get version from options or default to v3
-  const version = globalOptions.version || 3
-
   // Create initial state with merged defaults
   const state = useState<ConfirmState>('confirmState', () => {
     const type = globalOptions.type || 'info'
@@ -345,32 +284,25 @@ export function useConfirm(globalOptions: ConfirmOptions = {}) {
     const mergedDefaults = defu(globalOptions, typeDefaults)
 
     return {
+      type,
       visible: false,
       title: globalOptions.title || 'Confirm',
       message: globalOptions.message || 'Are you sure?',
-      confirm: getButton(
-        globalOptions.confirm as Partial<ConfirmButton> | string | undefined,
+      size: globalOptions.size || mergedDefaults.size,
+      confirm: addSize(getButton(
+        globalOptions.confirm as Partial<ConfirmButton> | string,
         typeDefaults.confirm as Partial<ConfirmButton>,
-        version,
-        globalOptions.size,
-      ),
-      cancel: getButton(
-        globalOptions.cancel as Partial<ConfirmButton> | string | false | undefined,
+      ), mergedDefaults.size as ConfirmSize),
+      cancel: addSize(getButton(
+        globalOptions.cancel as Partial<ConfirmButton> | string | false,
         typeDefaults.cancel as Partial<ConfirmButton>,
-        version,
-        globalOptions.size,
-      ),
-      type,
-      size: globalOptions.size || mergedDefaults.size || 'lg',
-      icon: getIcon(
-        globalOptions.icon as Partial<ConfirmIcon> | string | undefined,
+      ), mergedDefaults.size as ConfirmSize),
+      icon: addSize(getIcon(
+        globalOptions.icon as Partial<ConfirmIcon> | string,
         typeDefaults.icon as Partial<ConfirmIcon>,
-        version,
-        globalOptions.size,
-      ),
-      bgClass: globalOptions.bgClass || mergedDefaults.bgClass || '',
+      ), mergedDefaults.size as ConfirmSize),
+      bgClass: globalOptions.bgClass || mergedDefaults.bgClass,
       resolve: null,
-      version,
     } as ConfirmState
   })
 
@@ -390,31 +322,24 @@ export function useConfirm(globalOptions: ConfirmOptions = {}) {
       // Update state with new options
       state.value = {
         ...state.value,
+        type,
         visible: true,
         title: mergedOptions.title ?? state.value.title,
         message: mergedOptions.message ?? state.value.message,
-        confirm: getButton(
+        confirm: addSize(getButton(
           mergedOptions.confirm as Partial<ConfirmButton> | string | undefined,
           typeDefaults.confirm as Partial<ConfirmButton>,
-          version,
-          mergedOptions.size,
-        ),
+        ), mergedOptions.size as ConfirmSize),
         cancel: mergedOptions.cancel === false
           ? false
-          : getButton(
+          : addSize(getButton(
               mergedOptions.cancel as Partial<ConfirmButton> | string | undefined,
               typeDefaults.cancel as Partial<ConfirmButton>,
-              version,
-              mergedOptions.size,
-            ),
-        type,
-        size: mergedOptions.size ?? state.value.size,
-        icon: getIcon(
+            ), mergedOptions.size as ConfirmSize),
+        icon: addSize(getIcon(
           mergedOptions.icon as Partial<ConfirmIcon> | string | undefined,
           typeDefaults.icon as Partial<ConfirmIcon>,
-          version,
-          mergedOptions.size,
-        ),
+        ), mergedOptions.size as ConfirmSize),
         bgClass: mergedOptions.bgClass ?? state.value.bgClass,
         resolve,
       } as ConfirmState

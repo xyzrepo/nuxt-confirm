@@ -37,7 +37,6 @@ export default defineNuxtPlugin((nuxtApp) => {
     }
   }
 
-  // Make options and confirm service available globally
+  // Make options available globally
   nuxtApp.provide('confirmOptions', options)
-  // nuxtApp.provide('useConfirm', { confirm, state, onConfirm, onCancel })
 })

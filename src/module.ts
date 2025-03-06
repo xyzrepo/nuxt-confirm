@@ -16,7 +16,7 @@ export interface ModuleOptions {
   autoImport?: boolean
   /**
    * Version of the confirm dialog
-   * @default 3
+   * @default 2
    */
   version?: 2 | 3
 }
@@ -30,8 +30,8 @@ export default defineNuxtModule<ModuleOptions>({
     },
   },
   defaults: {
-    type: 'danger',
     version: 2,
+    autoImport: true,
   },
   setup(options, nuxt) {
     const { resolve } = createResolver(import.meta.url)

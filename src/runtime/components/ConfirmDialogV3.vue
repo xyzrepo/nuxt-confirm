@@ -6,12 +6,9 @@
     :ui="modalStyle"
   >
     <template #title>
-      <UBadge :color="state.confirm.color">
-        v3
-      </UBadge>
       <div class="flex items-center gap-4">
         <UIcon
-          :name="state.icon.name || ''"
+          :name="state.icon.name"
           :class="iconClasses"
           :size="state.icon.size"
         />
@@ -46,8 +43,7 @@
 </template>
 
 <script setup lang="ts">
-const { $confirmOptions } = useNuxtApp()
-const { state, onConfirm, onCancel } = useConfirm($confirmOptions as ConfirmOptions)
+const { state, onConfirm, onCancel } = useConfirm({ version: 3 })
 
 const iconClasses = computed(() => ({
   'text-error-500': state.value.type === 'danger',
