@@ -43,11 +43,6 @@ export default defineNuxtModule<ModuleOptions>({
       },
     )
 
-    // Add composable
-    nuxt.hook('imports:dirs', (dirs) => {
-      dirs.push(resolve(runtimeDir, 'composables'))
-    })
-
     // Add plugin to inject default options
     addPlugin({
       src: resolve(runtimeDir, 'plugin'),
@@ -76,6 +71,10 @@ export default defineNuxtModule<ModuleOptions>({
     //     filePath: resolve(runtimeDir, 'components/ConfirmDialogV3.vue')
     //   })
     // }
+    // Add composable
+    nuxt.hook('imports:dirs', (dirs) => {
+      dirs.push(resolve(runtimeDir, 'composables'))
+    })
 
     // Add types
     nuxt.hook('prepare:types', ({ references }) => {

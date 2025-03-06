@@ -50,6 +50,8 @@
 </template>
 
 <script setup lang="ts">
+import { useConfirm } from '../composables/useConfirm'
+
 const { state, onConfirm, onCancel } = useConfirm()
 /**
  * Simple color mapping function

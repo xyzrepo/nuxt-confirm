@@ -43,7 +43,10 @@
 </template>
 
 <script setup lang="ts">
-const { state, onConfirm, onCancel } = useConfirm({ version: 3 })
+import { computed } from 'vue'
+import { useConfirm } from '../composables/useConfirm'
+
+const { state, onConfirm, onCancel } = useConfirm()
 
 const iconClasses = computed(() => ({
   'text-error-500': state.value.type === 'danger',
