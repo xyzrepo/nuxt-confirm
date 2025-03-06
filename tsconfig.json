@@ -1,0 +1,12 @@
+{
+  "extends": "./playground/.nuxt/tsconfig.json",
+  "include": [
+    "src/**/*",
+    "playground/**/*"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules"
+  ],
+  "editor.tabSize": 2
+}
