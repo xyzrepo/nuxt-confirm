@@ -1,6 +1,6 @@
 {
   "name": "@xyz/nuxt-confirm",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A promise-based confirmation dialog module for Nuxt applications that provides customizable, accessible modal confirmations",
   "repository": "https://github.com/xyzrepo/nuxt-confirm",
   "license": "MIT",
